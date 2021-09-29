@@ -128,6 +128,7 @@ export const getStaticProps = async ({ params, previewData }) => {
     $(elm).addClass("hljs");
   });
 
+
   const headings: any = $('h1, h2, h3').toArray();
   const toc:TocProps = headings.map(data => ({
     text: data.children[0].data,
