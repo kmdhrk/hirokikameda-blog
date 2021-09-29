@@ -1,0 +1,32 @@
+.wrap {
+  border: 2px solid #f1f1f1;
+  border-radius: 5px;
+  padding: 0.8em 1em;
+  font-size: 1em;
+  @media (min-width: 768px) {
+    padding: 1em 1.5em;
+  }
+  & > ol {
+    counter-reset: list-count;
+    list-style-type: none !important;
+    position: relative;
+    padding-left: 1.5em !important;
+    & > li::before {
+      content: counter(list-count) ".";
+      counter-increment: list-count;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+  }
+  & > p {
+    margin-bottom: 0.3em;
+    &:first-of-type{
+      margin-top: 0;
+    }
+  }
+  & a{
+  font-size: 1em;
+  color: inherit;
+  }
+}
