@@ -110,6 +110,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async ({ params, previewData }) => {
   const id = params.id;
 
+  
   const isDraft = (item: any): item is { draftKey: string } =>
     !!(item?.draftKey && typeof item.draftKey === "string");
   const draftKey = isDraft(previewData);
