@@ -123,8 +123,7 @@ export const getStaticProps = async ({ params, previewData }) => {
   return {
     props: {
       content,
-      highlightedBody: $.html(),
-      toc,
+      highlightedBody: content.body,
     },
   };
 };
