@@ -95,15 +95,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async ({ params, previewData }) => {
   const id = params.id;
 
-  const isDraft = (item: any): item is { draftKey: string } =>
-    !!(item?.draftKey && typeof item.draftKey === "string");
-  const draftKey = isDraft(previewData);
-  const content: contentProps = await fetch(
-    `https://webdock.microcms.io/api/v1/blog/${id}${
-      draftKey !== undefined ? `?draftKey=${draftKey}` : ""
-    }`,
-    { headers: { "X-API-KEY": process.env.API_KEY || "" } }
-  ).then((res) => res.json());
+  const draftKey = previewData?.draftKey;
+  const content = await fetch(
+  `https://webdock.microcms.io/api/v1/blog/${id}${
+   draftKey !== undefined ? `?draftKey=${draftKey}` : ''
+  }`,
+  { headers: { 'X-API-KEY': process.env.apiKey || '' } }
+ )
+  .then((res) => res.json());
 
   const $ = cheerio.load(content.body);
   $("pre code").each((_, elm) => {
@@ -112,7 +111,7 @@ export const getStaticProps = async ({ params, previewData }) => {
     $(elm).addClass("hljs");
   });
 
-  const headings: any = $("h1, h2, h3").toArray();
+  const headings: any = $("h1, h2").toArray();
   const toc: TocProps = headings.map((data) => ({
     text: data.children[0].data,
     id: data.attribs.id,
