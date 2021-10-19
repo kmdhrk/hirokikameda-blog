@@ -11,6 +11,7 @@ export type CardProps = {
   title: string;
   date: string;
   category: string;
+  alt?: string;
 };
 dayjs.locale("ja");
 
@@ -22,13 +23,14 @@ export default function Card({
   date,
   title,
   category,
+  alt= "",
 }: CardProps) {
   return (
     <Link href={link} as={link}>
       <a>
         <article className="hover:opacity-80 transition-opacity hover:translate-y-1">
           {src ? (
-            <Image src={src} width={width} height={height} />
+            <Image src={src} width={width} height={height} alt={alt}/>
           ) : (
             <Image src="/noimage.png" alt="No Image" />
           )}

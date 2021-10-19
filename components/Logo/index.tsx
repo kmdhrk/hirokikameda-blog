@@ -4,7 +4,7 @@ export default function Logo() {
     <Link href="/">
       <a>
         <h1 className="md:text-4xl text-center font-bold text-2xl text-gray-900">
-          Hiroki Kameda's Blog
+          Hiroki Kameda Blog
         </h1>
       </a>
     </Link>

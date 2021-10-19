@@ -74,7 +74,6 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
               height={content.eyecatch.height}
             />
           </div>
-          <Toc toc={toc} />
           <BlogContents contents={highlightedBody} />
         </div>
         <div className="mt-12 pb-12 text-center text-blue-600 underline">
@@ -106,7 +105,7 @@ export const getStaticProps = async ({ params, previewData }) => {
      { headers: { "X-API-KEY": process.env.API_KEY || "" } }
    ).then((res) => res.json());
 
-  const $ = cheerio.load(content.body);
+/*   const $ = cheerio.load(content.body);
   $("pre code").each((_, elm) => {
     const result = hljs.highlightAuto($(elm).text());
     $(elm).html(result.value);
@@ -119,13 +118,12 @@ export const getStaticProps = async ({ params, previewData }) => {
     id: data.attribs.id,
     name: data.name,
   }));
-  console.log(toc)
+  console.log(toc) */
 
   return {
     props: {
       content,
-      highlightedBody: $.html(),
-      toc,
+      highlightedBody: content.body,
     },
   };
 };
