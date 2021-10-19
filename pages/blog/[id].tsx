@@ -105,7 +105,7 @@ export const getStaticProps = async ({ params, previewData }) => {
      { headers: { "X-API-KEY": process.env.API_KEY || "" } }
    ).then((res) => res.json());
 
-  const $ = cheerio.load(content.body);
+/*   const $ = cheerio.load(content.body);
   $("pre code").each((_, elm) => {
     const result = hljs.highlightAuto($(elm).text());
     $(elm).html(result.value);
@@ -118,7 +118,7 @@ export const getStaticProps = async ({ params, previewData }) => {
     id: data.attribs.id,
     name: data.name,
   }));
-  console.log(toc)
+  console.log(toc) */
 
   return {
     props: {
