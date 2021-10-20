@@ -2,10 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fetch from "node-fetch";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (!req.query.id) {
+  if (!req.query.slug) {
     return res.status(404).end();
   }
-  const id = req.query.id;
+  const id = req.query.slug;
   const draftKey = req.query.draftKey;
 
   const content = await fetch(
