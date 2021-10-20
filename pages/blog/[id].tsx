@@ -28,7 +28,6 @@ export type contentProps = {
   id: string;
   crearedAt: string;
   updatedAt: string;
-  publishedAt?: string;
   revisedAt: string;
   title: string;
   description: string;
@@ -51,7 +50,6 @@ export type contentProps = {
 export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
   const router = useRouter();
   const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
-  const publichedDate = content.publishedAt ?? null;
 
   return (
     <>
@@ -66,11 +64,6 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
       <Header />
       <main>
         <div className="max-w-3xl px-4 py-6 md:p-11 mx-auto  sm:rounded-xl bg-white shadow-sm">
-          <PostMeta
-            title={content.title}
-            published={publichedDate}
-            category={content.category}
-          />
           <div className="my-6 md:my-12">
             <Eyecatch
               url={content.eyecatch.url}
@@ -99,10 +92,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps = async (context) => {
   const id = context.params?.slug;
+  
+  const draftKey = context.previewData?.draftKey;
 
-  const isDraft = (item: any): item is { draftKey: string } =>
-    !!(item?.draftKey && typeof item.draftKey === "string");
-  const draftKey = isDraft(context.previewData?.draftKey);
+  console.log(context.previewData?.draftKey);
   const content: contentProps = await fetch(
     `https://webdock.microcms.io/api/v1/blog/${id}${
       draftKey !== undefined ? `?draftKey=${draftKey}` : ""
