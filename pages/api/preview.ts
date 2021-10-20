@@ -7,9 +7,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
   const id = req.query.slug;
   const draftKey = req.query.draftKey;
+  console.log(draftKey)
 
   const content = await fetch(
-    `https://webdock.microcms.io/api/v1/blog/${id}&draftKey=${draftKey}`,
+    `https://webdock.microcms.io/api/v1/blog/${id}?draftKey=${draftKey}`,
     { headers: { 'X-API-KEY': process.env.API_KEY || '' } }
   )
   .then(res => res.json()).catch(error => null);
@@ -17,6 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (!content) {
     return res.status(401).json({ message: 'Invalid slug' });
   }
+  console.log(content.id)
 
   res.setPreviewData({
     slug: content.id,
