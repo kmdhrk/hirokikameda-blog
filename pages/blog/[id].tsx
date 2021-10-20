@@ -97,7 +97,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps = async (context) => {
-  const id = context.params?.slug;
+  const id = context.params?.id;
   const draftKey = context.previewData?.draftKey;
 
   const content: contentProps = await fetch(
