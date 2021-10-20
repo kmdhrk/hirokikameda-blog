@@ -9,7 +9,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const draftKey = req.query.draftKey;
 
   const content = await fetch(
-    `https://webdock.microcms.io/api/v1/blog/${id}?fields=id&draftKey=${draftKey}`,
+    `https://webdock.microcms.io/api/v1/blog/${id}&draftKey=${draftKey}`,
     { headers: { 'X-API-KEY': process.env.API_KEY || '' } }
   )
   .then(res => res.json()).catch(error => null);
@@ -22,7 +22,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     slug: content.id,
     draftKey: req.query.draftKey,
   });
-  res.writeHead(307, { Location: `/blog/${content.id}` });
+  res.writeHead(307, { Location: `/draft/` });
   res.end('Preview mode enabled');
 };
 

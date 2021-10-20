@@ -94,15 +94,14 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
 export const getStaticPaths: GetStaticPaths = async () => {
   const data: any = await client.get({ endpoint: "blog" });
   const paths = data.contents.map((content) => `/blog/${content.id}`);
-  return { paths, fallback: true };
+  return { paths, fallback: false };
 };
 
 export const getStaticProps = async (context) => {
   const id = context.params?.slug;
-  
+
   const draftKey = context.previewData?.draftKey;
 
-  console.log(context.previewData?.draftKey);
   const content: contentProps = await fetch(
     `https://webdock.microcms.io/api/v1/blog/${id}${
       draftKey !== undefined ? `?draftKey=${draftKey}` : ""
