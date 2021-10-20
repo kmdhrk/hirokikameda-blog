@@ -52,6 +52,10 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
   const router = useRouter();
   const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
 
+  if (router.isFallback) {
+    return<div>Loading...</div>
+  }
+
   return (
     <>
       <Seo
