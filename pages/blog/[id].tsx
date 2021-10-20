@@ -74,6 +74,7 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
               height={content.eyecatch.height}
             />
           </div>
+          <Toc toc={toc}/>
           <BlogContents contents={highlightedBody} />
         </div>
         <div className="mt-12 pb-12 text-center text-blue-600 underline">
@@ -92,12 +93,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
-export const getStaticProps = async ({ params, previewData }) => {
-  const id = params.id;
+export const getStaticProps = async ( context ) => {
+  const id = context.params?.slug;
 
    const isDraft = (item: any): item is { draftKey: string } =>
      !!(item?.draftKey && typeof item.draftKey === "string");
-   const draftKey = isDraft(previewData);
+  const draftKey = isDraft(context.previewData?.draftKey);
    const content: contentProps = await fetch(
      `https://webdock.microcms.io/api/v1/blog/${id}${
        draftKey !== undefined ? `?draftKey=${draftKey}` : ""
@@ -105,7 +106,7 @@ export const getStaticProps = async ({ params, previewData }) => {
      { headers: { "X-API-KEY": process.env.API_KEY || "" } }
    ).then((res) => res.json());
 
-/*   const $ = cheerio.load(content.body);
+   const $ = cheerio.load(content.body);
   $("pre code").each((_, elm) => {
     const result = hljs.highlightAuto($(elm).text());
     $(elm).html(result.value);
@@ -118,12 +119,12 @@ export const getStaticProps = async ({ params, previewData }) => {
     id: data.attribs.id,
     name: data.name,
   }));
-  console.log(toc) */
 
   return {
     props: {
       content,
-      highlightedBody: content.body,
+      highlightedBody: $.html(),
+      toc,
     },
   };
 };
