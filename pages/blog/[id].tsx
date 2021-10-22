@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import Eyecatch from "../../components/Eyecatch";
 import BlogContents from "../../components/BlogContents";
 import PostMeta from "../../components/PostMeta";
+import BlogIntro from "../../components/BlogIntro";
+import { isConstructorDeclaration } from "typescript";
 
 export type BlogProps = {
   content: contentProps;
@@ -41,6 +43,7 @@ export type contentProps = {
     name: string;
   };
   body?: string;
+  intro?: string;
   eyecatch: {
     url: string;
     height: number;
@@ -53,7 +56,7 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
   const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
 
   if (router.isFallback) {
-    return<div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -74,14 +77,17 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
             published={content.publishedAt}
             category={content.category}
           />
-          <div className="my-6 md:my-12">
-            <Eyecatch
-              url={content.eyecatch.url}
-              width={content.eyecatch.width}
-              height={content.eyecatch.height}
-            />
-          </div>
-          <Toc toc={toc} />
+          {content.eyecatch ? (
+            <div className="my-6 md:my-12">
+              <Eyecatch
+                url={content.eyecatch.url}
+                width={content.eyecatch.width}
+                height={content.eyecatch.height}
+              />
+            </div>
+          ) : null}
+          {content.intro ? <BlogIntro contents={content.intro} /> : null}
+          {toc.length ? <Toc toc={toc} /> : null}
           <BlogContents contents={highlightedBody} />
         </div>
         <div className="mt-12 pb-12 text-center text-blue-600 underline">
@@ -105,8 +111,7 @@ export const getStaticProps = async (context) => {
   const draftKey = context.previewData?.draftKey;
 
   const content: contentProps = await fetch(
-    `https://webdock.microcms.io/api/v1/blog/${id}${
-      draftKey !== undefined ? `?draftKey=${draftKey}` : ""
+    `https://webdock.microcms.io/api/v1/blog/${id}${draftKey !== undefined ? `?draftKey=${draftKey}` : ""
     }`,
     { headers: { "X-API-KEY": process.env.API_KEY || "" } }
   ).then((res) => res.json());
