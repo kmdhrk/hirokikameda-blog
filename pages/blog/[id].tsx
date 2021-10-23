@@ -87,7 +87,7 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
             </div>
           ) : null}
           {content.intro ? <BlogIntro contents={content.intro} /> : null}
-          {toc.length ? <Toc toc={toc} /> : null}
+          {toc.length ? <div className="my-6 md:my-12"><Toc toc={toc} /></div> : null}
           <BlogContents contents={highlightedBody} />
         </div>
         <div className="mt-12 pb-12 text-center text-blue-600 underline">
