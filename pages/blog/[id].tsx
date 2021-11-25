@@ -108,7 +108,6 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
                 objectPosition="center"
               />
             </div>
-            <p></p>
             <p className="mt-6 sm:mt-0 sm:ml-10 text-sm leading-7 text-[#333]">
               <span className="text-base text-[#000]">ヒロ (<a href="https://twitter.com/hirokiweblax" className="text-blue-600 underline">@hirokiweblax</a>)</span>
               <br />
