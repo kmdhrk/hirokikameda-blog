@@ -12,7 +12,7 @@ import Eyecatch from "../../components/Eyecatch";
 import BlogContents from "../../components/BlogContents";
 import PostMeta from "../../components/PostMeta";
 import BlogIntro from "../../components/BlogIntro";
-import { isConstructorDeclaration } from "typescript";
+import Image from "next/image";
 
 export type BlogProps = {
   content: contentProps;
@@ -87,8 +87,38 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
             </div>
           ) : null}
           {content.intro ? <BlogIntro contents={content.intro} /> : null}
-          {toc.length ? <div className="my-6 md:my-12"><Toc toc={toc} /></div> : null}
+          {toc.length ? (
+            <div className="my-6 md:my-12">
+              <Toc toc={toc} />
+            </div>
+          ) : null}
           <BlogContents contents={highlightedBody} />
+        </div>
+        <div className="max-w-3xl mx-auto mt-6 py-8 px-4 sm:px-11 sm:rounded-xl bg-white shadow-sm ">
+          <p className="font-bold text-lg sm:text-xl">この記事を書いた人</p>
+          <div className="sm:flex mt-5 items-center">
+            <div className="rounded-full overflow-hidden border-2 relative w-[150px] h-[150px] flex-shrink-0 mx-auto sm:mx-0">
+              <Image
+                src="/person.jpg"
+                alt="写真: ヒロの人物画像"
+                width={300}
+                height={300}
+                layout="fill"
+                objectFit="cover"
+                objectPosition="center"
+              />
+            </div>
+            <p></p>
+            <p className="mt-6 sm:mt-0 sm:ml-10 text-sm leading-7 text-[#333]">
+              <span className="text-base text-[#000]">ヒロ (<a href="https://twitter.com/hirokiweblax" className="text-blue-600 underline">@hirokiweblax</a>)</span>
+              <br />
+              フリーランス歴3年のコーダー兼ディレクターです
+              <br />
+              デイトラやウルトラデザインスクールのメンター
+              <br />
+              ブログでは公式ドキュメントを根拠とした正しいコーディングの知識、実際に現場で使っている知識の発信をしています。
+            </p>
+          </div>
         </div>
         <div className="mt-12 pb-12 text-center text-blue-600 underline">
           <Link href="/">
@@ -111,7 +141,8 @@ export const getStaticProps = async (context) => {
   const draftKey = context.previewData?.draftKey;
 
   const content: contentProps = await fetch(
-    `https://webdock.microcms.io/api/v1/blog/${id}${draftKey !== undefined ? `?draftKey=${draftKey}` : ""
+    `https://webdock.microcms.io/api/v1/blog/${id}${
+      draftKey !== undefined ? `?draftKey=${draftKey}` : ""
     }`,
     { headers: { "X-API-KEY": process.env.API_KEY || "" } }
   ).then((res) => res.json());
