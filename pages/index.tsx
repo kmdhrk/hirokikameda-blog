@@ -2,10 +2,12 @@ import { client } from "../libs/client";
 import { GetStaticProps } from "next";
 import Header from "../components/Header";
 import CardLists from "../components/CardLists";
+import Seo from "../components";
 
 export default function Home({ blog }) {
   return (
     <>
+      <Seo/>
       <Header />
       <main>
         <div className="mx-auto px-4">
