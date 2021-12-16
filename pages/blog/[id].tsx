@@ -13,11 +13,19 @@ import BlogContents from "../../components/BlogContents";
 import PostMeta from "../../components/PostMeta";
 import BlogIntro from "../../components/BlogIntro";
 import Image from "next/image";
+import parse, {
+  domToReact,
+  HTMLReactParserOptions,
+  Element,
+  DOMNode,
+} from "html-react-parser";
+import { ReactDOM } from "react";
 
 export type BlogProps = {
   content: contentProps;
   highlightedBody: string;
   toc: TocProps;
+  contentPerse: ReactDOM;
 };
 
 export type TocProps = {
@@ -51,7 +59,61 @@ export type contentProps = {
   };
 };
 
-export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
+  const replace = async (node) => {
+    //単独のaタグ判定
+    if (
+      node.name === "a" && //タグがa
+      node.parent?.name === "p" && //親タグがp
+      node.parent?.children.length === 1 //他に並列で要素を持っていない
+    ) {
+      //ブログ内のものも、ブログ外もURL形式で取得
+      const url =
+        node.attribs.href.indexOf("http") === -1
+          ? `https://micro-cms-blog-nu.vercel.app${node.attribs.href}`
+          : node.attribs.href;
+      const headers = {
+        "user-agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.152 Safari/537.36",
+      };
+      const pageData = await fetch(url, { headers }).then((res) => res.text());
+      const $ = cheerio.load(pageData);
+      
+      // 4. 取得したtext/htmlデータから該当するmetaタグを取得 ==============
+      const metas = $("meta").toArray();
+      const metaData = {
+        url: url,
+        title: "",
+        description: "",
+        image: "",
+      };
+      console.log(metas)
+
+      // 5. title, description, imageにあたる情報を取り出し配列として格納 ==
+      for (let i = 0; i < metas.length; i++) {
+         if (metas[i].attribs?.property === 'og:title') metaData.title = metas[i].attribs.content;
+         if (metas[i].attribs?.property === 'og:description') metaData.description = metas[i].attribs.content;
+         if (metas[i].attribs?.property === 'og:image') metaData.image = metas[i].attribs.content;
+      } 
+      console.log(metaData)
+      return (
+        <a href={url} rel="noreferrer" data-label="true">
+          {domToReact(node.children)}
+          {metaData.title}
+          {metaData.description}
+          {metaData.image}
+        </a>
+      );
+    }
+  };
+
+
+
+export default function Blogid({
+  content,
+  highlightedBody,
+  toc,
+  contentPerse,
+}: BlogProps) {
   const router = useRouter();
   const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
 
@@ -101,15 +163,22 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
               <Image
                 src="/person.jpg"
                 alt="写真: ヒロの人物画像"
-                width={300}
-                height={300}
                 layout="fill"
                 objectFit="cover"
                 objectPosition="center"
               />
             </div>
             <p className="mt-6 sm:mt-0 sm:ml-10 text-sm leading-7 text-[#333]">
-              <span className="text-base text-[#000]">ヒロ (<a href="https://twitter.com/hirokiweblax" className="text-blue-600 underline">@hirokiweblax</a>)</span>
+              <span className="text-base text-[#000]">
+                ヒロ (
+                <a
+                  href="https://twitter.com/hirokiweblax"
+                  className="text-blue-600 underline"
+                >
+                  @hirokiweblax
+                </a>
+                )
+              </span>
               <br />
               フリーランス歴3年のコーダー兼ディレクターです
               <br />
@@ -124,6 +193,7 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
             <a>TOPへ戻る</a>
           </Link>
         </div>
+        {parse(content.body, { replace })}
       </main>
     </>
   );
