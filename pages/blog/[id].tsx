@@ -17,15 +17,18 @@ import parse, {
   domToReact,
   HTMLReactParserOptions,
   Element,
-  DOMNode,
+  Node,
 } from "html-react-parser";
 import { ReactDOM } from "react";
+import { isConditionalExpression } from "typescript";
+import node from "postcss/lib/node";
 
 export type BlogProps = {
   content: contentProps;
   highlightedBody: string;
   toc: TocProps;
   contentPerse: ReactDOM;
+  a: any;
 };
 
 export type TocProps = {
@@ -59,68 +62,15 @@ export type contentProps = {
   };
 };
 
-  const replace = async (node) => {
-    //単独のaタグ判定
-    if (
-      node.name === "a" && //タグがa
-      node.parent?.name === "p" && //親タグがp
-      node.parent?.children.length === 1 //他に並列で要素を持っていない
-    ) {
-      //ブログ内のものも、ブログ外もURL形式で取得
-      const url =
-        node.attribs.href.indexOf("http") === -1
-          ? `https://micro-cms-blog-nu.vercel.app${node.attribs.href}`
-          : node.attribs.href;
-      const headers = {
-        "user-agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.152 Safari/537.36",
-      };
-      const pageData = await fetch(url, { headers }).then((res) => res.text());
-      const $ = cheerio.load(pageData);
-      
-      // 4. 取得したtext/htmlデータから該当するmetaタグを取得 ==============
-      const metas = $("meta").toArray();
-      const metaData = {
-        url: url,
-        title: "",
-        description: "",
-        image: "",
-      };
-      console.log(metas)
-
-      // 5. title, description, imageにあたる情報を取り出し配列として格納 ==
-      for (let i = 0; i < metas.length; i++) {
-         if (metas[i].attribs?.property === 'og:title') metaData.title = metas[i].attribs.content;
-         if (metas[i].attribs?.property === 'og:description') metaData.description = metas[i].attribs.content;
-         if (metas[i].attribs?.property === 'og:image') metaData.image = metas[i].attribs.content;
-      } 
-      console.log(metaData)
-      return (
-        <a href={url} rel="noreferrer" data-label="true">
-          {domToReact(node.children)}
-          {metaData.title}
-          {metaData.description}
-          {metaData.image}
-        </a>
-      );
-    }
-  };
-
-
-
-export default function Blogid({
-  content,
-  highlightedBody,
-  toc,
-  contentPerse,
-}: BlogProps) {
+export default function Blogid({ content, highlightedBody, toc}: BlogProps) {
   const router = useRouter();
   const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
+
+
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
-
   return (
     <>
       <Seo
@@ -193,11 +143,14 @@ export default function Blogid({
             <a>TOPへ戻る</a>
           </Link>
         </div>
-        {parse(content.body, { replace })}
+        {parse(content.body)}
       </main>
     </>
   );
 }
+
+
+
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const data: any = await client.get({ endpoint: "blog" });
@@ -215,6 +168,53 @@ export const getStaticProps = async (context) => {
     }`,
     { headers: { "X-API-KEY": process.env.API_KEY || "" } }
   ).then((res) => res.json());
+  const replace = async (node) => {
+    //単独のaタグ判定
+    if (
+      node.name === "a" && //タグがa
+      node.parent?.name === "p" && //親タグがp
+      node.parent?.children.length === 1 //他に並列で要素を持っていない
+    ) {
+      //ブログ内のものも、ブログ外もURL形式で取得
+      const url =
+        node.attribs.href.indexOf("http") === -1
+          ? `https://micro-cms-blog-nu.vercel.app${node.attribs.href}`
+          : node.attribs.href;
+      const headers = {
+        "user-agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.152 Safari/537.36",
+      };
+      const pageData = await fetch(url, { headers })
+        .then((res) => res.text())
+        .then((text) => {
+          const $ = cheerio.load(text);
+          // 4. 取得したtext/htmlデータから該当するmetaタグを取得 ==============
+          const metas = $("meta").toArray();
+          const metaData = {
+            url: url,
+            title: "",
+            description: "",
+            image: "",
+          };
+
+          // 5. title, description, imageにあたる情報を取り出し配列として格納 ==
+          for (let i = 0; i < metas.length; i++) {
+            if (metas[i].attribs?.property === "og:title")
+              metaData.title = metas[i].attribs.content;
+            if (metas[i].attribs?.property === "og:description")
+              metaData.description = metas[i].attribs.content;
+            if (metas[i].attribs?.property === "og:image")
+              metaData.image = metas[i].attribs.content;
+          }
+          return metaData;
+        });
+      return pageData;
+    }
+    return null;
+  };
+
+
+
 
   const $ = cheerio.load(content.body);
   $("pre code").each((_, elm) => {
