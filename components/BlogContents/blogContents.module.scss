@@ -5,7 +5,7 @@
     padding-left: 1rem;
   }
 
-  p {
+  p:not([class]) {
     line-height: 2;
     font-size: 0.9375rem;
     margin: 1.25em 0;

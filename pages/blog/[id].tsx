@@ -13,11 +13,15 @@ import BlogContents from "../../components/BlogContents";
 import PostMeta from "../../components/PostMeta";
 import BlogIntro from "../../components/BlogIntro";
 import Image from "next/image";
+import { ReactDOM } from "react";
 
 export type BlogProps = {
   content: contentProps;
   highlightedBody: string;
   toc: TocProps;
+  contentPerse: ReactDOM;
+  links: any;
+  cardDatas: string[];
 };
 
 export type TocProps = {
@@ -51,14 +55,18 @@ export type contentProps = {
   };
 };
 
-export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
+export default function Blogid({
+  content,
+  highlightedBody,
+  toc,
+  cardDatas,
+}: BlogProps) {
   const router = useRouter();
-  const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
+  const pagePath = `${process.env.NEXT_PUBLIC_DOMEIN}${router.asPath}`;
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
-
   return (
     <>
       <Seo
@@ -92,7 +100,7 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
               <Toc toc={toc} />
             </div>
           ) : null}
-          <BlogContents contents={highlightedBody} />
+          <BlogContents contents={highlightedBody} cardDatas={cardDatas}/>
         </div>
         <div className="max-w-3xl mx-auto mt-6 py-8 px-4 sm:px-11 sm:rounded-xl bg-white shadow-sm ">
           <p className="font-bold text-lg sm:text-xl">この記事を書いた人</p>
@@ -101,15 +109,22 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
               <Image
                 src="/person.jpg"
                 alt="写真: ヒロの人物画像"
-                width={300}
-                height={300}
                 layout="fill"
                 objectFit="cover"
                 objectPosition="center"
               />
             </div>
             <p className="mt-6 sm:mt-0 sm:ml-10 text-sm leading-7 text-[#333]">
-              <span className="text-base text-[#000]">ヒロ (<a href="https://twitter.com/hirokiweblax" className="text-blue-600 underline">@hirokiweblax</a>)</span>
+              <span className="text-base text-[#000]">
+                ヒロ (
+                <a
+                  href="https://twitter.com/hirokiweblax"
+                  className="text-blue-600 underline"
+                >
+                  @hirokiweblax
+                </a>
+                )
+              </span>
               <br />
               フリーランス歴3年のコーダー兼ディレクターです
               <br />
@@ -124,6 +139,7 @@ export default function Blogid({ content, highlightedBody, toc }: BlogProps) {
             <a>TOPへ戻る</a>
           </Link>
         </div>
+
       </main>
     </>
   );
@@ -147,11 +163,14 @@ export const getStaticProps = async (context) => {
   ).then((res) => res.json());
 
   const $ = cheerio.load(content.body);
+
   $("pre code").each((_, elm) => {
     const result = hljs.highlightAuto($(elm).text());
     $(elm).html(result.value);
     $(elm).addClass("hljs");
   });
+
+  const highlightedBody = $.html('body').replace(/<body>/, '')
 
   const headings: any = $("h2").toArray();
   const toc: TocProps = headings.map((data) => ({
@@ -160,11 +179,54 @@ export const getStaticProps = async (context) => {
     name: data.name,
   }));
 
+  const links = $("a")
+    .toArray()
+    .map((data) => {
+      const url =
+        data.attribs.href.indexOf("http") === -1
+          ? `${process.env.NEXT_PUBLIC_DOMEIN}${data.attribs.href}`
+          : data.attribs.href;
+      return { url: url };
+    });
+
+  let cardDatas = [];
+  const temps = await Promise.all(
+    links.map(async (link) => {
+      const metas = await fetch(link.url)
+        .then((res) => res.text())
+        .then((text) => {
+          const $ = cheerio.load(text);
+          const metas = $("meta").toArray();
+          const metaData = {
+            url: link.url,
+            title: "",
+            description: "",
+            image: "",
+          };
+          for (let i = 0; i < metas.length; i++) {
+            if (metas[i].attribs?.property === "og:title")
+              metaData.title = metas[i].attribs.content;
+            if (metas[i].attribs?.property === "og:description")
+              metaData.description = metas[i].attribs.content;
+            if (metas[i].attribs?.property === "og:image")
+              metaData.image = metas[i].attribs.content;
+          }
+          return metaData;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      return metas;
+    })
+  );
+  cardDatas = temps.filter((temp) => temp !== undefined);
+
   return {
     props: {
       content,
-      highlightedBody: $.html(),
+      highlightedBody: highlightedBody,
       toc,
+      cardDatas,
     },
   };
 };
