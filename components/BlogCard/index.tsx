@@ -1,36 +1,67 @@
 import React from "react";
-import Image from "next/image";
+import { styled } from "@mui/system";
+import { Box, Link, Typography } from "@mui/material";
 
+const Card = styled(Link)({
+  display: "flex",
+  justifyContent: "space-between",
+  border: "2px solid #f1f1f1",
+  borderRadius: "6px",
+  alignItems: "stretch",
+  overflow: "hidden",
+});
+
+const StyledImage = styled("img")({
+  objectFit: "cover",
+  objectPosition: "center",
+  width: "100%",
+  height: "100%",
+});
+const Title = styled(Typography)({
+  color: "#333",
+  fontSize: "18px",
+  lineHeight: 1.4,
+  fontWeight: "bold",
+});
+
+const Description = styled(Typography)({
+  color: "#9ca3af",
+  fontSize: "12px",
+  lineHeight: 1.6,
+});
 
 const BlogCard = ({ cardData, children }) => {
-
-  if (cardData.image) {
+  const blank = cardData.url.indexOf(process.env.NEXT_PUBLIC_DOMEIN) === -1;
+  const blankProp = blank
+    ? {
+        target: "_blank",
+        rel: "noopener nofollow",
+      }
+    : {};
+  if (cardData.title) {
     return (
-      <a
-        href={cardData.url}
-        target="_brank"
-        className="grid grid-cols-5 bg-white rounded-md p-3"
-      >
-        <div className="col-span-1 flex justify-start items-center relative w-10 h-10">
-          <Image
+      <Card href={cardData.url} underline="none" {...blankProp}>
+        <Box sx={{ flexBasis: "200px", flexShrink: 0, position: "relative" }}>
+          <StyledImage
             src={cardData.image ? cardData.image : "/noimage.png"}
-            alt=''
-            objectFit="cover"
-            objectPosition="center"
-            layout="fill"
+            alt=""
           />
-        </div>
-        <div className="col-span-4 flex flex-col justify-start">
-          <div className="text-xl font-bold text-black">{cardData.title && cardData.title}</div>
-          <div className="text-gray-400 text-xs">{cardData.description && cardData.description}</div>
-        </div>
-      </a>
+        </Box>
+        <Box sx={{ p: 2 }}>
+          <Title>{cardData.title && cardData.title}</Title>
+          <Box sx={{ mt: 1 }}>
+            <Description>
+              {cardData.description && cardData.description}
+            </Description>
+          </Box>
+        </Box>
+      </Card>
     );
   }
   return (
-    <a href={cardData.url} target="_brank">
+    <Link href={cardData.url} {...blankProp} underline="none">
       {children}
-    </a>
+    </Link>
   );
 };
 

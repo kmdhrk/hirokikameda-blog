@@ -62,7 +62,7 @@ export default function Blogid({
   cardDatas,
 }: BlogProps) {
   const router = useRouter();
-  const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
+  const pagePath = `${process.env.NEXT_PUBLIC_DOMEIN}${router.asPath}`;
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -184,7 +184,7 @@ export const getStaticProps = async (context) => {
     .map((data) => {
       const url =
         data.attribs.href.indexOf("http") === -1
-          ? `https://micro-cms-blog-nu.vercel.app${data.attribs.href}`
+          ? `${process.env.NEXT_PUBLIC_DOMEIN}${data.attribs.href}`
           : data.attribs.href;
       return { url: url };
     });
