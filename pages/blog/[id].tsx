@@ -13,22 +13,15 @@ import BlogContents from "../../components/BlogContents";
 import PostMeta from "../../components/PostMeta";
 import BlogIntro from "../../components/BlogIntro";
 import Image from "next/image";
-import parse, {
-  domToReact,
-  HTMLReactParserOptions,
-  Element,
-  Node,
-} from "html-react-parser";
 import { ReactDOM } from "react";
-import { isConditionalExpression } from "typescript";
-import node from "postcss/lib/node";
 
 export type BlogProps = {
   content: contentProps;
   highlightedBody: string;
   toc: TocProps;
   contentPerse: ReactDOM;
-  a: any;
+  links: any;
+  cardDatas: string[];
 };
 
 export type TocProps = {
@@ -62,11 +55,14 @@ export type contentProps = {
   };
 };
 
-export default function Blogid({ content, highlightedBody, toc}: BlogProps) {
+export default function Blogid({
+  content,
+  highlightedBody,
+  toc,
+  cardDatas,
+}: BlogProps) {
   const router = useRouter();
   const pagePath = `https://micro-cms-blog-nu.vercel.app${router.asPath}`;
-
-
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -104,7 +100,7 @@ export default function Blogid({ content, highlightedBody, toc}: BlogProps) {
               <Toc toc={toc} />
             </div>
           ) : null}
-          <BlogContents contents={highlightedBody} />
+          <BlogContents contents={highlightedBody} cardDatas={cardDatas}/>
         </div>
         <div className="max-w-3xl mx-auto mt-6 py-8 px-4 sm:px-11 sm:rounded-xl bg-white shadow-sm ">
           <p className="font-bold text-lg sm:text-xl">この記事を書いた人</p>
@@ -143,14 +139,11 @@ export default function Blogid({ content, highlightedBody, toc}: BlogProps) {
             <a>TOPへ戻る</a>
           </Link>
         </div>
-        {parse(content.body)}
+
       </main>
     </>
   );
 }
-
-
-
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const data: any = await client.get({ endpoint: "blog" });
@@ -168,36 +161,48 @@ export const getStaticProps = async (context) => {
     }`,
     { headers: { "X-API-KEY": process.env.API_KEY || "" } }
   ).then((res) => res.json());
-  const replace = async (node) => {
-    //単独のaタグ判定
-    if (
-      node.name === "a" && //タグがa
-      node.parent?.name === "p" && //親タグがp
-      node.parent?.children.length === 1 //他に並列で要素を持っていない
-    ) {
-      //ブログ内のものも、ブログ外もURL形式で取得
+
+  const $ = cheerio.load(content.body);
+
+  $("pre code").each((_, elm) => {
+    const result = hljs.highlightAuto($(elm).text());
+    $(elm).html(result.value);
+    $(elm).addClass("hljs");
+  });
+
+  const highlightedBody = $.html('body').replace(/<body>/, '')
+
+  const headings: any = $("h2").toArray();
+  const toc: TocProps = headings.map((data) => ({
+    text: data.children[0].data,
+    id: data.attribs.id,
+    name: data.name,
+  }));
+
+  const links = $("a")
+    .toArray()
+    .map((data) => {
       const url =
-        node.attribs.href.indexOf("http") === -1
-          ? `https://micro-cms-blog-nu.vercel.app${node.attribs.href}`
-          : node.attribs.href;
-      const headers = {
-        "user-agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.152 Safari/537.36",
-      };
-      const pageData = await fetch(url, { headers })
+        data.attribs.href.indexOf("http") === -1
+          ? `https://micro-cms-blog-nu.vercel.app${data.attribs.href}`
+          : data.attribs.href;
+      return { url: url };
+    });
+
+  let cardDatas = [];
+  const temps = await Promise.all(
+    links.map(async (link) => {
+      const metas = await fetch(link.url)
         .then((res) => res.text())
         .then((text) => {
           const $ = cheerio.load(text);
-          // 4. 取得したtext/htmlデータから該当するmetaタグを取得 ==============
           const metas = $("meta").toArray();
           const metaData = {
-            url: url,
+            url: link.url,
             title: "",
             description: "",
             image: "",
           };
-
-          // 5. title, description, imageにあたる情報を取り出し配列として格納 ==
           for (let i = 0; i < metas.length; i++) {
             if (metas[i].attribs?.property === "og:title")
               metaData.title = metas[i].attribs.content;
@@ -207,34 +212,21 @@ export const getStaticProps = async (context) => {
               metaData.image = metas[i].attribs.content;
           }
           return metaData;
+        })
+        .catch((e) => {
+          console.log(e);
         });
-      return pageData;
-    }
-    return null;
-  };
-
-
-
-
-  const $ = cheerio.load(content.body);
-  $("pre code").each((_, elm) => {
-    const result = hljs.highlightAuto($(elm).text());
-    $(elm).html(result.value);
-    $(elm).addClass("hljs");
-  });
-
-  const headings: any = $("h2").toArray();
-  const toc: TocProps = headings.map((data) => ({
-    text: data.children[0].data,
-    id: data.attribs.id,
-    name: data.name,
-  }));
+      return metas;
+    })
+  );
+  cardDatas = temps.filter((temp) => temp !== undefined);
 
   return {
     props: {
       content,
-      highlightedBody: $.html(),
+      highlightedBody: highlightedBody,
       toc,
+      cardDatas,
     },
   };
 };
