@@ -2,14 +2,17 @@ import React from "react";
 import { styled } from "@mui/system";
 import { Box, Link, Typography } from "@mui/material";
 
-const Card = styled(Link)({
-  display: "flex",
-  justifyContent: "space-between",
+const Card = styled(Link)(({ theme }) => ({
   border: "2px solid #f1f1f1",
   borderRadius: "6px",
-  alignItems: "stretch",
   overflow: "hidden",
-});
+  display: 'block',
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "stretch",
+  },
+}));
 
 const StyledImage = styled("img")({
   objectFit: "cover",
