@@ -1,6 +1,6 @@
 import React from "react";
 import { styled } from "@mui/system";
-import { Box, BoxProps, Link, Typography } from "@mui/material";
+import { Box, BoxProps } from "@mui/material";
 
 type ListProps = {
   bgcolor: "blue" | "gray" | "yellow";
@@ -22,12 +22,10 @@ const List = styled(Box)<ListProps>(({ theme, bgcolor }) => ({
   backgroundColor: handleColorType(bgcolor),
   paddingTop: "1.5em",
   paddingBottom: "1.5em",
-  borderRadius: "12px",
   paddingRight: "2em",
   [theme.breakpoints.up("md")]: {
     paddingLeft: "3em !important",
-    borderRadius: "16px",  paddingTop: "1em",
-  paddingBottom: "1em",
+    borderRadius: "12px",
   },
 }));
 
