@@ -5,8 +5,8 @@ import { BlogCard } from "../BlogCard";
 export default function BlogContents({ contents, cardDatas }) {
   const replace = (node) => {
     if (
-      node.name === "a" && //タグがa
-      node.parent?.children.length === 1  //他に並列で要素を持っていない
+      node.name === "a" &&
+      node.parent?.children.length === 1
     ) {
       const indexOfUrl = cardDatas.findIndex((obj) => {
         return obj.url.indexOf(node.attribs?.href) != -1;
@@ -17,6 +17,7 @@ export default function BlogContents({ contents, cardDatas }) {
         </BlogCard>
       );
     }
+    
     return null;
   };
 
