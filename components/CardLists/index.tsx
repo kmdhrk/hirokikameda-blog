@@ -12,8 +12,8 @@ export default function CardLists({ blog }) {
               height={blog.eyecatch.height}
               title={blog.title}
               link={`/blog/${blog.id}`}
-              date={blog.category.publishedAt}
-              category={blog.category.name}
+              date={blog.publishedAt}
+              category={blog.category}
               key={index}
             />
           );

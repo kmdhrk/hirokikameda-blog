@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import "dayjs/locale/ja";
 import dayjs from "dayjs";
+import { Box } from "@mui/material";
 
 export type CardProps = {
   src: string;
@@ -10,7 +11,9 @@ export type CardProps = {
   link: string;
   title: string;
   date: string;
-  category: string;
+  category: {
+    name: string;
+  }[];
   alt?: string;
 };
 dayjs.locale("ja");
@@ -23,14 +26,14 @@ export default function Card({
   date,
   title,
   category,
-  alt= "",
+  alt = "",
 }: CardProps) {
   return (
     <Link href={link} as={link}>
       <a>
         <article className="hover:opacity-80 transition-opacity hover:translate-y-1">
           {src ? (
-            <Image src={src} width={width} height={height} alt={alt}/>
+            <Image src={src} width={width} height={height} alt={alt} />
           ) : (
             <Image src="/noimage.png" alt="No Image" />
           )}
@@ -45,7 +48,14 @@ export default function Card({
             )}
             {category && (
               <span className="ml-5 text-sm text-gray-600 underline">
-                {category}
+                {
+                  category.map((cat, index) => {
+                    return (
+                      <Box component="span" key={index} sx={{ mr: 1 }}>
+                        {cat.name}
+                      </Box>
+                    );
+                  })}
               </span>
             )}
           </div>
