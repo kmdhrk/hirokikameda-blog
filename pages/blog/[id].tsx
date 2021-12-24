@@ -45,7 +45,7 @@ export type contentProps = {
     publishedAt: string;
     revisedAt: string;
     name: string;
-  };
+  }[];
   body?: string;
   intro?: string;
   eyecatch: {
@@ -83,6 +83,7 @@ export default function Blogid({
           <PostMeta
             title={content.title}
             published={content.publishedAt}
+            revised={content.revisedAt}
             category={content.category}
           />
           {content.eyecatch ? (
