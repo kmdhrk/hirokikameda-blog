@@ -48,7 +48,7 @@ export type contentProps = {
   }[];
   body?: string;
   intro?: string;
-  eyecatch: {
+  eyecatch?: {
     url: string;
     height: number;
     width: number;
