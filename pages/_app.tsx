@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { existsGaId, pageview, GA_ID } from "../libs/gtag";
 import Script from "next/script";
+import { theme } from "../theme";
+import { ThemeProvider } from "@mui/material/styles";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -41,8 +43,9 @@ function MyApp({ Component, pageProps }) {
           </Script>
         </>
       )}
-
-      <Component {...pageProps} />
+      <ThemeProvider theme={theme}>
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   );
 }

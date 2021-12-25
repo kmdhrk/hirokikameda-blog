@@ -6,7 +6,7 @@ const Card = styled(Link)(({ theme }) => ({
   border: "2px solid #f1f1f1",
   borderRadius: "6px",
   overflow: "hidden",
-  display: 'block',
+  display: "block",
   [theme.breakpoints.up("md")]: {
     display: "flex",
     justifyContent: "space-between",
@@ -51,12 +51,12 @@ const BlogCard = ({ cardData, children }) => {
           />
         </Box>
         <Box sx={{ p: 2 }}>
-          <Title>{cardData.title && cardData.title}</Title>
-          <Box sx={{ mt: 1 }}>
-            <Description>
-              {cardData.description && cardData.description}
-            </Description>
-          </Box>
+          {cardData.title && <Title>{cardData.title}</Title>}
+          {cardData.description && (
+            <Box sx={{ mt: 1 }}>
+              <Description>{cardData.description}</Description>
+            </Box>
+          )}
         </Box>
       </Card>
     );

@@ -19,7 +19,7 @@ export default function Home({ blog }) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const data: any = await client.get({ endpoint: "blog" });
+  const data: any = await client.get({ endpoint: "blog?orders=-publishedAt" });
   return {
     props: {
       blog: data.contents,

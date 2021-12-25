@@ -1,7 +1,6 @@
 import "dayjs/locale/ja";
 import dayjs from "dayjs";
-import styles from "./postMeta.module.scss";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import UpdateOutlinedIcon from "@mui/icons-material/UpdateOutlined";
 import { VFC } from "react";
@@ -27,11 +26,22 @@ const publishedComponent: VFC = (published: string) => {
 export default function PostMeta({ title, published, category, revised }) {
   return (
     <>
-      <h1 className={styles.postTitle}>{title}</h1>
+      <Typography
+        sx={{
+          mt: 0,
+          fontSize: { xs: "1.6rem", md: "2.5rem" },
+          color: "#000",
+          lineHeight: 1.4,
+          fontWeight: "bold",
+        }}
+        component="h1"
+      >
+        {title}
+      </Typography>
       <Box sx={{ mt: 2, color: "#4B5563" }}>
         {published && publishedComponent(published)}
         {revised && revisedComponent(revised)}
-        <span className="ml-5 text-sm underline">
+        <Box component="span" sx={{ml: 2, fontSize: '0.925rem', textDecoration: 'underLine'}}>
           {category &&
             category.map((cat, index) => {
               return (
@@ -40,7 +50,7 @@ export default function PostMeta({ title, published, category, revised }) {
                 </Box>
               );
             })}
-        </span>
+        </Box>
       </Box>
     </>
   );

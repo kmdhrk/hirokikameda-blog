@@ -1,10 +1,3 @@
-import styles from "./blogIntro.module.scss";
-
-export default function BlogIntro({contents}) {
-  return (
-    <div
-      className={styles.postIntro}
-      dangerouslySetInnerHTML={{ __html: contents }}
-    ></div>
-  );
+export default function BlogIntro({ contents }) {
+  return <div dangerouslySetInnerHTML={{ __html: contents }}></div>;
 }

@@ -1,4 +1,3 @@
-import styles from "./blogContents.module.scss";
 import parse, { domToReact } from "html-react-parser";
 import { BlogCard } from "../BlogCard";
 import ListBlogContents from "../ListBlogContents";
@@ -50,6 +49,6 @@ export default function BlogContents({ contents, cardDatas }) {
   };
 
   return (
-    <div className={styles.postContents}>{parse(contents, { replace })}</div>
+    <>{parse(contents, { replace })}</>
   );
 }

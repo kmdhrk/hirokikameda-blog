@@ -1,6 +1,114 @@
-body{
-  background-color: #F9F9F9;
-  border-top: 8px solid #FFF200;
-  
+body {
+  background-color: #F5F5F5;
+  border-top: 8px solid #fff200;
+  color: #333;
+  font-family: 'Noto Sans JP', sans-serif !important;
 }
 
+p:not([class]) {
+  line-height: 2;
+  font-size: 1rem;
+  margin: 1.25em 0;
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
+  }
+}
+p:not([class]) + a:not([class]) {
+  margin-top: 1em;
+}
+
+h2:not([class]) + p:not([class]) {
+  margin-top: 0;
+}
+
+h3:not([class]) + p:not([class]) {
+  margin-top: 0;
+}
+
+p:not([class]) > br:not([class]) {
+  display: none;
+}
+p:empty {
+  margin: 0;
+}
+
+h2:not([class]) {
+  margin: 3em 0 0.6em 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1.6;
+  color: #000;
+  @media (min-width: 768px) {
+    font-size: 1.93rem;
+  }
+}
+h2:first-of-child {
+  margin-top: 0;
+}
+
+h3:not([class]) {
+  margin: 2rem 0 1rem 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #000;
+  @media (min-width: 768px) {
+    font-size: 1.2rem;
+    margin: 3rem 0 1rem 0;
+  }
+}
+
+video:not([class]){
+  margin: 2rem auto;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  display: block;
+}
+img:not([class]) {
+  margin-right: auto;
+  margin-left: auto;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  display: block;
+}
+
+pre code {
+  color: #c9d1d9;
+  background-color: #0d1117;
+}
+
+code {
+  font-size: 0.85em !important;
+  background-color: #eff3f8;
+  color: #FF4040;
+  padding: 0.2em 0.4em;
+  margin: 0;
+  border-radius: 5px;
+}
+
+
+ul {
+  list-style-type: disc !important;
+  padding-left: 1em;
+  line-height: 1.75;
+  font-size: 1em;
+}
+
+ul > * + * {
+  margin-top: 0.5em;
+}
+
+ol:not([class]) {
+  list-style-type: decimal;
+  padding-left: 1em;
+  line-height: 2;
+  font-size: 0.875em;
+}
+
+a:not([class]) {
+  color: blue;
+  line-height: 1.2;
+  font-size: 1em;
+}
+strong:not([class]) {
+  color: #000;
+}
