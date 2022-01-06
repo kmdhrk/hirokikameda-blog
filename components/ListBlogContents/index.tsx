@@ -9,9 +9,9 @@ type ListProps = {
 const handleColorType = (bgcolor) => {
   switch (bgcolor) {
     case "blue":
-      return "#EFF8F9";
+      return "#F6F9FF";
     case "gray":
-      return "#F6F6F6";
+      return "#F5F5F5";
     case "yellow":
       return "#FFFBDC";
   }
