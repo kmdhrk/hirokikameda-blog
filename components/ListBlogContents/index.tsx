@@ -24,6 +24,7 @@ const List = styled(Box)<ListProps>(({ theme, bgcolor }) => ({
   paddingBottom: "1.5em",
   paddingRight: "2em",
   borderRadius: "12px",
+  fontSize: '1.125rem',
   [theme.breakpoints.up("md")]: {
     paddingLeft: "3em !important",
   },
